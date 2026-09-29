@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Farneback Optical Flow</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="background-glow glow-one"></div>
+<div class="background-glow glow-two"></div>
+
+<header class="navbar">
+
+    <div class="brand">
+        <div class="brand-icon">OF</div>
+
+        <div>
+            <h2>OpticalFlow</h2>
+            <span>Image Processing Lab</span>
+        </div>
+    </div>
+
+    <div class="status">
+        <span class="status-dot"></span>
+        System Ready
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <section class="hero">
+
+        <div class="badge">
+            OPENCV • FARNEBACK
+        </div>
+
+        <h1>
+            Dense Optical Flow
+            <span>Analysis</span>
+        </h1>
+
+        <p>
+            Upload a video and analyze motion using
+            the Farneback dense optical flow algorithm.
+        </p>
+
+    </section>
+
+
+    <section class="workspace">
+
+        <div class="panel upload-panel">
+
+            <div class="panel-heading">
+
+                <div>
+                    <span class="section-number">01</span>
+                    <h2>Upload Video</h2>
+                </div>
+
+                <span class="panel-icon">↥</span>
+
+            </div>
+
+
+            <div
+                class="drop-zone"
+                id="dropZone"
+            >
+
+                <input
+                    type="file"
+                    id="videoInput"
+                    accept="video/*"
+                    hidden
+                >
+
+                <div class="upload-icon">
+                    ↑
+                </div>
+
+                <h3>Drop your video here</h3>
+
+                <p>
+                    or click to browse from your computer
+                </p>
+
+                <span class="file-types">
+                    MP4 • AVI • MOV • MKV
+                </span>
+
+            </div>
+
+
+            <div
+                class="selected-file"
+                id="selectedFile"
+            >
+
+                <div class="file-icon">
+                    ▶
+                </div>
+
+                <div class="file-info">
+
+                    <strong id="fileName">
+                        No video selected
+                    </strong>
+
+                    <span id="fileSize">
+                        Select a video to begin
+                    </span>
+
+                </div>
+
+                <button
+                    class="remove-file"
+                    id="removeFile"
+                    type="button"
+                >
+                    ×
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="panel settings-panel">
+
+            <div class="panel-heading">
+
+                <div>
+                    <span class="section-number">02</span>
+                    <h2>Processing Settings</h2>
+                </div>
+
+                <span class="panel-icon">⚙</span>
+
+            </div>
+
+
+            <div class="setting">
+
+                <label for="noiseType">
+                    <span>Noise Type</span>
+                    <small>Preprocessing</small>
+                </label>
+
+                <select id="noiseType">
+
+                    <option value="None">
+                        None
+                    </option>
+
+                    <option value="Gaussian">
+                        Gaussian Noise
+                    </option>
+
+                    <option value="Salt & Pepper">
+                        Salt & Pepper
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="setting">
+
+                <label for="filterType">
+                    <span>Filter Type</span>
+                    <small>Noise reduction</small>
+                </label>
+
+                <select id="filterType">
+
+                    <option value="Gaussian">
+                        Gaussian Filter
+                    </option>
+
+                    <option value="Median">
+                        Median Filter
+                    </option>
+
+                    <option value="Bilateral">
+                        Bilateral Filter
+                    </option>
+
+                    <option value="None">
+                        No Filter
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="setting">
+
+                <label for="kernelSize">
+                    <span>Kernel Size</span>
+                    <small>Filter strength</small>
+                </label>
+
+                <select id="kernelSize">
+
+                    <option value="3">
+                        3 × 3
+                    </option>
+
+                    <option value="5" selected>
+                        5 × 5
+                    </option>
+
+                    <option value="7">
+                        7 × 7
+                    </option>
+
+                    <option value="9">
+                        9 × 9
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="algorithm-box">
+
+                <div class="algorithm-dot"></div>
+
+                <div>
+
+                    <strong>
+                        Farneback Dense Optical Flow
+                    </strong>
+
+                    <span>
+                        OpenCV • Pyramid-based motion estimation
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="processButton"
+                class="process-button"
+                type="button"
+            >
+
+                <span class="button-icon">▶</span>
+
+                <span id="buttonText">
+                    Analyze Video
+                </span>
+
+            </button>
+
+
+            <button
+                id="resetButton"
+                class="reset-button"
+                type="button"
+            >
+                Reset
+            </button>
+
+
+            <div
+                class="progress-container"
+                id="progressContainer"
+            >
+
+                <div class="progress-header">
+
+                    <span>
+                        Processing video...
+                    </span>
+
+                    <span id="progressText">
+                        Please wait
+                    </span>
+
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+
+            </div>
+
+
+            <div
+                class="status-message"
+                id="status"
+            ></div>
+
+        </div>
+
+    </section>
+
+
+    <section
+        id="resultSection"
+        class="result-section hidden"
+    >
+
+        <div class="result-header">
+
+            <div>
+
+                <span class="section-number">
+                    03
+                </span>
+
+                <h2>
+                    Optical Flow Result
+                </h2>
+
+                <p>
+                    Visualized motion field generated using
+                    Farneback dense optical flow.
+                </p>
+
+            </div>
+
+            <div class="result-badge">
+                ✓ Analysis Complete
+            </div>
+
+        </div>
+
+
+        <div class="video-container">
+
+            <video
+                id="resultVideo"
+                controls
+                playsinline
+            ></video>
+
+        </div>
+
+
+        <div class="statistics-header">
+
+            <h3>Analysis Statistics</h3>
+
+            <span>
+                Frame-by-frame analysis
+            </span>
+
+        </div>
+
+
+        <div class="statistics">
+
+            <div class="stat-card">
+
+                <span class="stat-icon">▣</span>
+
+                <span class="stat-label">
+                    Frames Processed
+                </span>
+
+                <strong id="frames">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span class="stat-icon">◷</span>
+
+                <span class="stat-label">
+                    Video FPS
+                </span>
+
+                <strong id="videoFps">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span class="stat-icon">⚡</span>
+
+                <span class="stat-label">
+                    Processing FPS
+                </span>
+
+                <strong id="processingFps">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span class="stat-icon">↗</span>
+
+                <span class="stat-label">
+                    Mean Motion
+                </span>
+
+                <strong id="meanMotion">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span class="stat-icon">↑</span>
+
+                <span class="stat-label">
+                    Maximum Motion
+                </span>
+
+                <strong id="maxMotion">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span class="stat-icon">%</span>
+
+                <span class="stat-label">
+                    Moving Pixels
+                </span>
+
+                <strong id="movingPixels">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span class="stat-icon">M</span>
+
+                <span class="stat-label">
+                    MSE
+                </span>
+
+                <strong id="mse">
+                    —
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span class="stat-icon">P</span>
+
+                <span class="stat-label">
+                    PSNR
+                </span>
+
+                <strong id="psnr">
+                    —
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <span>
+        Farneback Optical Flow
+    </span>
+
+    <span>
+        Built with Python • OpenCV • Flask
+    </span>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
